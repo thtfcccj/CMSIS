@@ -15,5 +15,8 @@
   #include "stm32f4xx.h"  //º¬core_cm4.h
 #endif
 
+#ifdef SUPPORT_HC32
+  #include "HC32.h"
+#endif
 
 #endif // __CMSIS_H
