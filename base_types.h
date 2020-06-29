@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2017, Huada Semiconductor Co.,Ltd All rights reserved.    
+* Copyright (C) 2019, Huada Semiconductor Co.,Ltd All rights reserved.    
 *
 * This software is owned and published by: 
 * Huada Semiconductor Co.,Ltd ("HDSC").
@@ -45,7 +45,7 @@
  ** base type common define.
  ** @link SampleGroup Some description @endlink
  **
- **   - 2018-03-09  1.0  Lux First version.
+ **   - 2019-03-01  1.0  Lux First version.
  **
  ******************************************************************************/
 
@@ -75,24 +75,20 @@
   #define FALSE       ((boolean_t) 0u)
 #endif  
 
-#if defined (__ICCARM__)
-#define __WEAKDEF            __WEAK __ATTRIBUTES
-#elif defined (__CC_ARM)
-#define __WEAKDEF            __weak
-#else
-#error	"unsupported compiler!!"
-#endif
-
 /** Returns the minimum value out of two values */
-#define MIN( X, Y )  ((X) < (Y) ? (X) : (Y))
+#define MINIMUM( X, Y )  ((X) < (Y) ? (X) : (Y))
 
 /** Returns the maximum value out of two values */
-#define MAX( X, Y )  ((X) > (Y) ? (X) : (Y))
+#define MAXIMUM( X, Y )  ((X) > (Y) ? (X) : (Y))
 
 /** Returns the dimension of an array */
-#define ARRAY_SZ( X )  (sizeof(X) / sizeof(X[0]))
+#define ARRAY_SZ( X )  (sizeof(X) / sizeof((X)[0]))
 
-#define ASSERT(x)       do{  assert((x)> 0u) ; }while(0);
+#ifdef __DEBUG_ASSERT
+    #define ASSERT(x) do{ assert((x)> 0u) ; }while(0);
+#else
+    #define ASSERT(x) {}
+#endif
 /******************************************************************************
  * Global type definitions
  ******************************************************************************/
@@ -113,7 +109,7 @@ typedef char         char_t;
 typedef void         (*func_ptr_t)(void);
 
 /** function pointer type to void/uint8_t function */
-typedef void         (*func_ptr_arg1_t)(uint8_t);
+typedef void         (*func_ptr_arg1_t)(uint8_t u8Param);
 
 /** generic error codes */
 typedef enum en_result
