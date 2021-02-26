@@ -80,7 +80,8 @@ void SystemCoreClockUpdate (void) // Update SystemCoreClock variable
  ******************************************************************************/
 void SystemInit(void)
 {
-    SystemCoreClockUpdate();
+  System_cbCfgClk();//用户实现的配置
+  SystemCoreClockUpdate();
     
 }
 

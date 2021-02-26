@@ -97,6 +97,8 @@ extern uint32_t SystemCoreClock;          // System Clock Frequency (Core Clock)
 extern void SystemInit (void);            // Initialize the system
 extern void SystemCoreClockUpdate (void); // Update SystemCoreClock variable
 
+extern void System_cbCfgClk (void); // 由用户实现配置
+
 #ifdef __cplusplus
 }
 #endif
