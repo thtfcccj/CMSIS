@@ -18,4 +18,9 @@
   #include "hc32F19x.h"
 #endif
 
+#ifdef SUPPORT_HC32F005
+  #include "hc32f005.h"
+#endif
+
+
 #endif
