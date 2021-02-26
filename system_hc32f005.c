@@ -61,13 +61,13 @@
  ******************************************************************************
  ** System Clock Frequency (Core Clock) Variable according CMSIS
  ******************************************************************************/
-uint32_t SystemCoreClock = 4000000;
+uint32_t SystemCoreClock;// = 4000000;
 
 
 //add clock source.
 void SystemCoreClockUpdate (void) // Update SystemCoreClock variable
 {
-    SystemCoreClock = Sysctrl_GetHClkFreq();
+  SystemCoreClock = Sysctrl_GetHClkFreq();
 }
 
 /**

@@ -54,6 +54,29 @@
  ******************************************************************************/
 #include "sysctrl.h"
 
+//----------------------------------------内部宏或函数--------------------------
+extern void SystemCoreClockUpdate (void); // Update SystemCoreClock variable
+
+///<< 系统时钟模块的基本功能设置
+///<< 注意：使能需要使用的时钟源之前，必须优先设置目标内部时钟源的TRIM值或外部时钟源的频率范围
+en_result_t Sysctrl_ClkSourceEnable(en_sysctrl_clk_source_t enSource, boolean_t bFlag);
+
+///<<外部晶振驱动配置：系统初始化Sysctrl_ClkInit()之后，可根据需要配置外部晶振的驱动能力，时钟初始化Sysctrl_ClkInit()默认为最大值;
+en_result_t Sysctrl_XTHDriverCfg(en_sysctrl_xtal_driver_t enDriver);
+
+///<<时钟稳定周期设置:系统初始化Sysctrl_ClkInit()之后，可根据需要配置时钟开启后的稳定之间，默认为最大值;
+en_result_t Sysctrl_SetXTHStableTime(en_sysctrl_xth_cycle_t enCycle);
+en_result_t Sysctrl_SetRCLStableTime(en_sysctrl_rcl_cycle_t enCycle);
+
+///<<系统时钟源切换并更新系统时钟：如果需要在系统时钟初始化Sysctrl_ClkInit()之后切换主频时钟源，则使用该函数；
+///<< 时钟切换前后，必须根据目标频率值设置Flash读等待周期，可配置插入周期为0、1、2，
+///<< 注意!!!：当HCLK大于24MHz时，FLASH等待周期插入必须至少为1,否则程序运行可能产生未知错误
+en_result_t Sysctrl_SysClkSwitch(en_sysctrl_clk_source_t enSource);
+
+///<< 时钟分频设置:根据系统情况，单独设置HCLK、PCLK的分配值;
+en_result_t Sysctrl_SetHCLKDiv(en_sysctrl_hclk_div_t enHCLKDiv);
+en_result_t Sysctrl_SetPCLKDiv(en_sysctrl_pclk_div_t enPCLKDiv);
+
 /**
  *******************************************************************************
  ** \addtogroup SysctrlGroup
@@ -297,7 +320,7 @@ uint32_t Sysctrl_GetHClkFreq(void)
             }
             break;
         case SysctrlClkXTH:
-            u32Val = SYSTEM_XTH;
+            u32Val = SYS_MHZ * 1000000;
             break;
         case SysctrlClkRCL:
             {
@@ -497,11 +520,9 @@ en_result_t Sysctrl_SetPCLKDiv(en_sysctrl_pclk_div_t enPCLKDiv)
  ******************************************************************************/
 en_result_t Sysctrl_SetPeripheralGate(en_sysctrl_peripheral_gate_t enPeripheral, boolean_t bFlag)
 {
-
-        SetBit((uint32_t)(&(M0P_SYSCTRL->PERI_CLKEN)), enPeripheral, bFlag);
-
-
-    return Ok;
+  if(bFlag) M0P_SYSCTRL->PERI_CLKEN |= (uint32_t)1 << enPeripheral;
+  else M0P_SYSCTRL->PERI_CLKEN &= ~((uint32_t)1 << enPeripheral);
+  return Ok;
 }
 
 /**
@@ -513,10 +534,7 @@ en_result_t Sysctrl_SetPeripheralGate(en_sysctrl_peripheral_gate_t enPeripheral,
  ******************************************************************************/
 boolean_t Sysctrl_GetPeripheralGate(en_sysctrl_peripheral_gate_t enPeripheral)
 {
-
-        return GetBit((uint32_t)(&(M0P_SYSCTRL->PERI_CLKEN)), enPeripheral);
-
-
+  return M0P_SYSCTRL->PERI_CLKEN & ((uint32_t)1 << enPeripheral);
 }
 
 /**
@@ -529,10 +547,11 @@ boolean_t Sysctrl_GetPeripheralGate(en_sysctrl_peripheral_gate_t enPeripheral)
  ******************************************************************************/
 en_result_t Sysctrl_SetFunc(en_sysctrl_func_t enFunc, boolean_t bFlag)
 {
-    _SysctrlUnlock();
-    SetBit((uint32_t)(&(M0P_SYSCTRL->SYSCTRL1)), enFunc, bFlag);
-
-    return Ok;
+  _SysctrlUnlock();
+  
+  if(bFlag) M0P_SYSCTRL->SYSCTRL1 |= (uint32_t)1 << enFunc;
+  else M0P_SYSCTRL->SYSCTRL1 &= ~((uint32_t)1 << enFunc);
+  return Ok;
 }
 
 //@} // SysctrlGroup

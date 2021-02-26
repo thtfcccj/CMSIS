@@ -62,7 +62,7 @@
  ******************************************************************************
  ** System Clock Frequency (Core Clock) Variable according CMSIS
  ******************************************************************************/
-uint32_t SystemCoreClock = 4000000;
+uint32_t SystemCoreClock;// = 4000000;
 
 
 //add clock source.
@@ -172,9 +172,60 @@ static void _InitHidePin(void)
  ******************************************************************************/
 void SystemInit(void)
 {
-  //内部默认校正
+  //低频默认校正
   M0P_SYSCTRL->RCL_CR_f.TRIM = (*((volatile uint16_t*) (0x00100C22ul)));
-  M0P_SYSCTRL->RCH_CR_f.TRIM = (*((volatile uint16_t*) (0x00100C08ul)));
+  
+  // TODO load trim from flash
+  //24M校准值地址：0x00100C00 - 0x00100C01
+  //22.12M校准值地址：0x00100C02 - 0x00100C03
+  //16M校准值地址：0x00100C04 - 0x00100C05
+  //8M校准值地址：0x00100C06 - 0x00100C07
+  //4M校准值地址：0x00100C08 - 0x00100C09
+  //Loader 4MHz Trimming value    
+  M0P_SYSCTRL->RCH_CR_f.TRIM = (*((volatile uint16_t*) (0x00100C08)));    
+  #if (SYS_MHZ > 24) //PLL SUPPORT 28M to 48M step 4M
+    M0P_SYSCTRL->PLL_CR_f.FRSEL = 0;//4M
+    M0P_SYSCTRL->PLL_CR_f.DIVN = SYS_MHZ / 4;
+    #if (SYS_MHZ >= 36)
+      M0P_SYSCTRL->PLL_CR_f.FOSC = 4;
+    #else
+      M0P_SYSCTRL->PLL_CR_f.FOSC = 3;
+    #endif
+    M0P_SYSCTRL->PLL_CR_f.STARTUP = 7; 
+    M0P_SYSCTRL->SYSCTRL2 = 0X5A5A;
+    M0P_SYSCTRL->SYSCTRL2 = 0XA5A5;
+    M0P_SYSCTRL->SYSCTRL0_f.PLL_EN = 1;
+    //重配置读等待周期,根据芯片资料,超24M时每起过24M多一值
+    unsigned long Data = M0P_FLASH->CR & ~0x0C;
+    Data |= ((SYS_MHZ / 24) << 2);
+    while(M0P_FLASH->CR != Data){
+      M0P_FLASH->BYPASS = 0x5A5A;
+      M0P_FLASH->BYPASS = 0xA5A5;
+      M0P_FLASH->CR = Data;
+    }
+    //switdh to PLL
+    while(M0P_SYSCTRL->PLL_CR_f.STABLE == 0){};
+    M0P_SYSCTRL->SYSCTRL2 = 0X5A5A;
+    M0P_SYSCTRL->SYSCTRL2 = 0XA5A5;
+    M0P_SYSCTRL->SYSCTRL0_f.CLKSW = 4;
+  #elif (SYS_MHZ > 4)//RCH切换频率, 由配置逐级读取校准地址值,默认系统为4M
+    //降低HCLK为1/128,需先解锁才能修改
+    M0P_SYSCTRL->SYSCTRL2 = 0X5A5A;
+    M0P_SYSCTRL->SYSCTRL2 = 0XA5A5;
+    M0P_SYSCTRL->SYSCTRL0_f.HCLK_PRS = 7; 
+    //配置时钟,推荐用下述几种，其它无校准数据不准确
+    M0P_SYSCTRL->RCH_CR = *((volatile uint16_t*)( 0X00100C06)); //8M
+    #if (SYS_MHZ >= 16)
+      M0P_SYSCTRL->RCH_CR = *((volatile uint16_t*)( 0X00100C04)); //16M
+    #endif
+    #if (SYS_MHZ >= 24) 
+      M0P_SYSCTRL->RCH_CR = *((volatile uint16_t*)( 0X00100C00)); //24M
+    #endif
+    //还原HCLK为1倍,需先解锁才能修改
+    M0P_SYSCTRL->SYSCTRL2 = 0X5A5A;
+    M0P_SYSCTRL->SYSCTRL2 = 0XA5A5;
+    M0P_SYSCTRL->SYSCTRL0_f.HCLK_PRS = 0;                                  
+  #endif
   
   SystemCoreClockUpdate();
 	_InitHidePin();

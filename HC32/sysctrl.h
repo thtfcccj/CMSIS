@@ -56,8 +56,10 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include "ddl.h"
-
+//注：此模块在原有HC32F005基础上，去掉了dll.h与应用相关部分，使其可独立使用
+//暂应用在HC32F005上，是否HC32通用有待测试
+#include "base_Types.h"
+#include "HC32.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -255,22 +257,6 @@ en_result_t Sysctrl_ClkInit(stc_sysctrl_clk_cfg_t *pstcCfg);
 ///< 系统时钟去初始化API:恢复为上电默认状态->PCLK=HCLK=SystemClk=RCH4MHz
 en_result_t Sysctrl_ClkDeInit(void);
 
-///< 系统时钟模块的基本功能设置
-///< 注意：使能需要使用的时钟源之前，必须优先设置目标内部时钟源的TRIM值或外部时钟源的频率范围
-en_result_t Sysctrl_ClkSourceEnable(en_sysctrl_clk_source_t enSource, boolean_t bFlag);
-
-///<外部晶振驱动配置：系统初始化Sysctrl_ClkInit()之后，可根据需要配置外部晶振的驱动能力，时钟初始化Sysctrl_ClkInit()默认为最大值;
-en_result_t Sysctrl_XTHDriverCfg(en_sysctrl_xtal_driver_t enDriver);
-
-///<时钟稳定周期设置:系统初始化Sysctrl_ClkInit()之后，可根据需要配置时钟开启后的稳定之间，默认为最大值;
-en_result_t Sysctrl_SetXTHStableTime(en_sysctrl_xth_cycle_t enCycle);
-en_result_t Sysctrl_SetRCLStableTime(en_sysctrl_rcl_cycle_t enCycle);
-
-///<系统时钟源切换并更新系统时钟：如果需要在系统时钟初始化Sysctrl_ClkInit()之后切换主频时钟源，则使用该函数；
-///< 时钟切换前后，必须根据目标频率值设置Flash读等待周期，可配置插入周期为0、1、2，
-///< 注意!!!：当HCLK大于24MHz时，FLASH等待周期插入必须至少为1,否则程序运行可能产生未知错误
-en_result_t Sysctrl_SysClkSwitch(en_sysctrl_clk_source_t enSource);
-
 ///< 时钟源频率设定：根据系统情况，单独设置不同时钟源的频率值;
 ///< 时钟频率设置前，必须根据目标频率值设置Flash读等待周期，可配置插入周期为0、1、2，
 ///< 其中XTL的时钟由外部晶振决定，无需设置。
@@ -278,11 +264,7 @@ en_result_t Sysctrl_SetRCHTrim(en_sysctrl_rch_freq_t enRCHFreq);
 en_result_t Sysctrl_SetRCLTrim(en_sysctrl_rcl_freq_t enRCLFreq);
 en_result_t Sysctrl_SetXTHFreq(en_sysctrl_xth_freq_t enXTHFreq);
 
-///< 时钟分频设置:根据系统情况，单独设置HCLK、PCLK的分配值;
-en_result_t Sysctrl_SetHCLKDiv(en_sysctrl_hclk_div_t enHCLKDiv);
-en_result_t Sysctrl_SetPCLKDiv(en_sysctrl_pclk_div_t enPCLKDiv);
-
-///< 时钟频率获取：根据系统需要，获取当前HCLK及PCLK的频率值
+///<< 时钟频率获取：根据系统需要，获取当前HCLK及PCLK的频率值
 uint32_t Sysctrl_GetHClkFreq(void);
 uint32_t Sysctrl_GetPClkFreq(void);
 
