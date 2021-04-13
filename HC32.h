@@ -22,5 +22,10 @@
   #include "hc32f005.h"
 #endif
 
+#ifdef SUPPORT_HC32F46X
+  #include "hc32F46x.h"
+  #include "hc32F46xb.h"
+#endif
+
 
 #endif
