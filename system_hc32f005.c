@@ -82,7 +82,6 @@ void SystemInit(void)
 {
   System_cbCfgClk();//用户实现的配置
   SystemCoreClockUpdate();
-    
 }
 
 

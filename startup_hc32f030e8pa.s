@@ -1,331 +1,275 @@
-;*******************************************************************************
-; Copyright (C) 2017, Huada Semiconductor Co.,Ltd All rights reserved.
+;/**************************************************************************//**
+; * @file     startup_CX32S003.s
+; * @brief    CMSIS Core Device Startup File for
+; *           ARMCM0plus Device Series
+; * @version  V1.01
+; * @date     23. November 2012
+; *
+; * @note
+; *
+; ******************************************************************************/
+;/* Copyright (c) 2012 ARM LIMITED
 ;
-; This software is owned and published by:
-; Huada Semiconductor Co.,Ltd ("HDSC").
-;
-; BY DOWNLOADING, INSTALLING OR USING THIS SOFTWARE, YOU AGREE TO BE BOUND
-; BY ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT.
-;
-; This software contains source code for use with HDSC
-; components. This software is licensed by HDSC to be adapted only
-; for use in systems utilizing HDSC components. HDSC shall not be
-; responsible for misuse or illegal use of this software for devices not
-; supported herein. HDSC is providing this software "AS IS" and will
-; not be responsible for issues arising from incorrect user implementation
-; of the software.
-;
-; Disclaimer:
-; HDSC MAKES NO WARRANTY, EXPRESS OR IMPLIED, ARISING BY LAW OR OTHERWISE,
-; REGARDING THE SOFTWARE (INCLUDING ANY ACOOMPANYING WRITTEN MATERIALS),
-; ITS PERFORMANCE OR SUITABILITY FOR YOUR INTENDED USE, INCLUDING,
-; WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY, THE IMPLIED
-; WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE OR USE, AND THE IMPLIED
-; WARRANTY OF NONINFRINGEMENT.
-; HDSC SHALL HAVE NO LIABILITY (WHETHER IN CONTRACT, WARRANTY, TORT,
-; NEGLIGENCE OR OTHERWISE) FOR ANY DAMAGES WHATSOEVER (INCLUDING, WITHOUT
-; LIMITATION, DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION,
-; LOSS OF BUSINESS INFORMATION, OR OTHER PECUNIARY LOSS) ARISING FROM USE OR
-; INABILITY TO USE THE SOFTWARE, INCLUDING, WITHOUT LIMITATION, ANY DIRECT,
-; INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES OR LOSS OF DATA,
-; SAVINGS OR PROFITS,
-; EVEN IF Disclaimer HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-; YOU ASSUME ALL RESPONSIBILITIES FOR SELECTION OF THE SOFTWARE TO ACHIEVE YOUR
-; INTENDED RESULTS, AND FOR THE INSTALLATION OF, USE OF, AND RESULTS OBTAINED
-; FROM, THE SOFTWARE.
-;
-; This software may be replicated in part or whole for the licensed use,
-; with the restriction that this Disclaimer and Copyright notice must be
-; included with each copy of this software, whether used in part or whole,
-; at all times.
-;/
-;/*****************************************************************************/
-;/*  Startup for IAR                                                          */
-;/*  Version     V1.0                                                         */
-;/*  Date        2018-03-09                                                   */
-;/*  Target-mcu  M0+ Device                                                   */
-;/*****************************************************************************/
+;   All rights reserved.
+;   Redistribution and use in source and binary forms, with or without
+;   modification, are permitted provided that the following conditions are met:
+;   - Redistributions of source code must retain the above copyright
+;     notice, this list of conditions and the following disclaimer.
+;   - Redistributions in binary form must reproduce the above copyright
+;     notice, this list of conditions and the following disclaimer in the
+;     documentation and/or other materials provided with the distribution.
+;   - Neither the name of ARM nor the names of its contributors may be used
+;     to endorse or promote products derived from this software without
+;     specific prior written permission.
+;   *
+;   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;   ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+;   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+;   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+;   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+;   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+;   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+;   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+;   POSSIBILITY OF SUCH DAMAGE.
+;   ---------------------------------------------------------------------------*/
+;/*
+;//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------
+;*/
 
 
-                MODULE  ?cstartup
+; <h> Stack Configuration
+;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+; </h>
 
-                ;; Forward declaration of sections.
-                SECTION CSTACK:DATA:NOROOT(3)
+Stack_Size      EQU     0x00000400
 
-                EXTERN  __iar_program_start
-                EXTERN  SystemInit
-                PUBLIC  __vector_table
-                
-                SECTION .intvec:CODE:ROOT(8)
-                DATA
-__vector_table  
-                DCD     sfe(CSTACK)               ; Top of Stack
-                DCD     Reset_Handler             ; Reset
-                DCD     NMI_Handler               ; NMI
-                DCD     HardFault_Handler         ; Hard Fault
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     SVC_Handler               ; SVCall
-                DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
-                DCD     PendSV_Handler            ; PendSV
-                DCD     SysTick_Handler           ; SysTick
-
-; Numbered IRQ handler vectors
-
-; Note: renaming to device dependent ISR function names are done in
-
-                DCD     PORTA_IRQHandler
-                DCD     PORTB_IRQHandler
-                DCD     PORTC_IRQHandler
-                DCD     PORTD_IRQHandler
-                DCD     DMAC_IRQHandler
-                DCD     TIM3_IRQHandler
-                DCD     UART0_IRQHandler
-                DCD     UART1_IRQHandler
-                DCD     Dummy_Handler
-                DCD     Dummy_Handler
-                DCD     SPI0_IRQHandler
-                DCD     SPI1_IRQHandler
-                DCD     I2C0_IRQHandler
-                DCD     I2C1_IRQHandler
-                DCD     TIM0_IRQHandler
-                DCD     TIM1_IRQHandler
-                DCD     TIM2_IRQHandler
-                DCD     Dummy_Handler
-                DCD     TIM4_IRQHandler
-                DCD     TIM5_IRQHandler
-                DCD     TIM6_IRQHandler
-                DCD     PCA_IRQHandler
-                DCD     WDT_IRQHandler
-                DCD     Dummy_Handler
-                DCD     ADC_IRQHandler
-                DCD     Dummy_Handler
-                DCD     VC0_IRQHandler
-                DCD     VC1_IRQHandler
-                DCD     LVD_IRQHandler
-                DCD     Dummy_Handler
-                DCD     EF_RAM_IRQHandler
-                DCD     CLKTRIM_IRQHandler
+                AREA    STACK, NOINIT, READWRITE, ALIGN=3
+Stack_Mem       SPACE   Stack_Size
+__initial_sp
 
 
+; <h> Heap Configuration
+;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+; </h>
+
+Heap_Size       EQU     0x00000400
+
+                AREA    HEAP, NOINIT, READWRITE, ALIGN=3
+__heap_base
+Heap_Mem        SPACE   Heap_Size
+__heap_limit
+
+
+                PRESERVE8
                 THUMB
 
-                PUBWEAK Reset_Handler
-                SECTION .text:CODE:NOROOT:REORDER(2)
-Reset_Handler
-                ;reset NVIC if in rom debug
-                LDR     R0, =0x20000000
-                LDR     R2, =0x0              ; vector offset
-                cmp     PC, R0
-                bls     ROMCODE
-              
-              ; ram code base address. 
-                ADD     R2, R0,R2
-ROMCODE
-              ; reset Vector table address.
-                LDR     R0, =0xE000ED08
-                STR     R2, [R0]
-                
-                LDR     R0, =SystemInit
-                BLX     R0
-                LDR     R0, =__iar_program_start
+
+; Vector Table Mapped to Address 0 at Reset
+
+                AREA    RESET, DATA, READONLY
+                EXPORT  __Vectors
+                EXPORT  __Vectors_End
+                EXPORT  __Vectors_Size
+
+__Vectors       DCD     __initial_sp              ; Top of Stack
+                DCD     Reset_Handler             ; Reset Handler
+                DCD     NMI_Handler               ; NMI Handler
+                DCD     HardFault_Handler         ; Hard Fault Handler
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     SVC_Handler               ; SVCall Handler
+                DCD     0                         ; Reserved
+                DCD     0                         ; Reserved
+                DCD     PendSV_Handler            ; PendSV Handler
+                DCD     SysTick_Handler           ; SysTick Handler
+
+
+                ; External Interrupts         
+                DCD     GPIOA_IRQHandler          ; GPIOA_IRQn          = 0,
+                DCD     GPIOB_IRQHandler          ; GPIOB_IRQn          = 1,
+                DCD     GPIOC_IRQHandler          ; GPIOC_IRQn          = 2,
+                DCD     GPIOD_IRQHandler          ; GPIOD_IRQn          = 3,
+				DCD     0                         ; Reserved---------------4,
+				DCD     0                         ; Reserved---------------5,
+                DCD     UART0_IRQHandler          ; UART0_IRQn          = 6,
+                DCD     UART1_IRQHandler          ; UART1_IRQn          = 7,
+				DCD     LPUART_IRQHandler         ; LPUART_IRQn=8,
+				DCD     0                         ; Reserved---------------9,
+                DCD     SPI0COMB_IRQHandler       ; SPI0COMB_IRQn       = 10,
+                DCD     SPI_DUMMYCOMB_IRQHandler  ; SPI_DUMMYCOMB_IRQn  = 11,
+                DCD     I2C0_IRQHandler           ; I2C0_IRQn           = 12,
+                DCD     I2C_DUMMY_IRQHandler      ; I2C_DUMMY_IRQn      = 13,
+                DCD     TIM10_IRQHandler          ; TIMER0_IRQn         = 14,
+                DCD     TIM11_IRQHandler          ; TIMER1_IRQn         = 15,
+				DCD     LPTIMER_IRQHandler        ; LPTIMER_IRQn        = 16,
+				DCD     0                         ; Reserved---------------17,
+                DCD     TIM1_IRQHandler           ; TIM1_IRQn           = 18,
+				DCD     TIM2_IRQHandler           ; TIM1_IRQn           = 19,
+				DCD     0                         ; Reserved---------------20,
+                DCD     PCA_IRQHandler            ; PCA_IRQn            = 21,
+                DCD     WWDT_IRQHandler           ; WWDT_IRQn           = 22,
+                DCD     IWDT_IRQHandler           ; IWDT_IRQn           = 23,
+                DCD     ADC0_IRQHandler           ; ADC0_IRQn           = 24,
+				DCD     LVD_IRQHandler            ; LVD_IRQn            = 25
+				DCD     VC_IRQHandler             ;VC_IRQn              = 26,,
+				DCD     0                         ; Reserved---------------27,
+				DCD     AWK_IRQHandler            ; AWK_IRQn            = 28,
+				DCD     ONEWIRE_IRQHandler        ; ONEWIRE_IRQn        = 29,
+                DCD     RTC_MATCH0_IRQHandler     ; RTC_MATCH0_IRQn     = 30,
+                DCD     CLKTRIM_IRQHandler        ; CLKTRIM_IRQn        = 31      
+__Vectors_End
+
+__Vectors_Size  EQU     __Vectors_End - __Vectors
+
+                AREA    |.text|, CODE, READONLY
+
+
+; Reset Handler
+
+Reset_Handler   PROC
+                EXPORT  Reset_Handler             [WEAK]
+                ;IMPORT  SystemInit
+                IMPORT  __main
+			    ;LDR     R0, =SystemInit
+                ;BLX     R0
+                LDR     R0, =__main
                 BX      R0
-
-                PUBWEAK NMI_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-NMI_Handler
-                B       NMI_Handler
-
-                PUBWEAK HardFault_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-HardFault_Handler
-                B       HardFault_Handler
+                ENDP
 
 
-                PUBWEAK SVC_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-SVC_Handler
-                B       SVC_Handler
+; Dummy Exception Handlers (infinite loops which can be modified)
 
-                PUBWEAK PendSV_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PendSV_Handler
-                B       PendSV_Handler
+NMI_Handler     PROC
+                EXPORT  NMI_Handler               [WEAK]
+                B       .
+                ENDP
+HardFault_Handler\
+                PROC
+                EXPORT  HardFault_Handler         [WEAK]
+                B       .
+                ENDP
+SVC_Handler     PROC
+                EXPORT  SVC_Handler               [WEAK]
+                B       .
+                ENDP
+PendSV_Handler  PROC
+                EXPORT  PendSV_Handler            [WEAK]
+                B       .
+                ENDP
+SysTick_Handler PROC
+                EXPORT  SysTick_Handler           [WEAK]
+                B       .
+                ENDP
 
-                PUBWEAK SysTick_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-SysTick_Handler
-                B       SysTick_Handler
+Default_Handler PROC
 
-                PUBWEAK PORTA_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PORTA_IRQHandler
-                B       PORTA_IRQHandler
-
-
-                PUBWEAK PORTB_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PORTB_IRQHandler
-                B       PORTB_IRQHandler
-
-
-                PUBWEAK PORTC_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PORTC_IRQHandler
-                B       PORTC_IRQHandler
-
-
-                PUBWEAK PORTD_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PORTD_IRQHandler
-                B       PORTD_IRQHandler
-
-
-                PUBWEAK DMAC_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-DMAC_IRQHandler
-                B       DMAC_IRQHandler
-
-
-                PUBWEAK TIM3_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM3_IRQHandler
-                B       TIM3_IRQHandler
-
-
-                PUBWEAK UART0_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-UART0_IRQHandler
-                B       UART0_IRQHandler
-
-
-                PUBWEAK UART1_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-UART1_IRQHandler
-                B       UART1_IRQHandler
-
-
-                PUBWEAK Dummy_Handler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-Dummy_Handler
-                B       Dummy_Handler
-
-
-                PUBWEAK SPI0_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-SPI0_IRQHandler
-                B       SPI0_IRQHandler
-
-
-                PUBWEAK SPI1_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-SPI1_IRQHandler
-                B       SPI1_IRQHandler
-
-
-                PUBWEAK I2C0_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-I2C0_IRQHandler
-                B       I2C0_IRQHandler
-
-
-                PUBWEAK I2C1_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-I2C1_IRQHandler
-                B       I2C1_IRQHandler
-
-
-                PUBWEAK TIM0_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM0_IRQHandler
-                B       TIM0_IRQHandler
-
-
-                PUBWEAK TIM1_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM1_IRQHandler
-                B       TIM1_IRQHandler
-
-
-                PUBWEAK TIM2_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM2_IRQHandler
-                B       TIM2_IRQHandler
-
-
-                PUBWEAK TIM4_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM4_IRQHandler
-                B       TIM4_IRQHandler
-
-
-                PUBWEAK TIM5_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM5_IRQHandler
-                B       TIM5_IRQHandler
-
-
-                PUBWEAK TIM6_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-TIM6_IRQHandler
-                B       TIM6_IRQHandler
-
-
-                PUBWEAK PCA_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-PCA_IRQHandler
-                B       PCA_IRQHandler
-
-
-                PUBWEAK WDT_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-WDT_IRQHandler
-                B       WDT_IRQHandler
-
-
-                PUBWEAK ADC_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-ADC_IRQHandler
-                B       ADC_IRQHandler
-
-
-                PUBWEAK VC0_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-VC0_IRQHandler
-                B       VC0_IRQHandler
-
-
-                PUBWEAK VC1_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-VC1_IRQHandler
-                B       VC1_IRQHandler
-
-
-                PUBWEAK LVD_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-LVD_IRQHandler
-                B       LVD_IRQHandler
-
-
-                PUBWEAK EF_RAM_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-EF_RAM_IRQHandler
-                B       EF_RAM_IRQHandler
-
-
-                PUBWEAK CLKTRIM_IRQHandler
-                SECTION .text:CODE:NOROOT:REORDER(1)
-CLKTRIM_IRQHandler
-                B       CLKTRIM_IRQHandler
-
-
+				EXPORT  GPIOA_IRQHandler          [WEAK]  ; GPIOA_IRQn          = 0,                                                     
+				EXPORT  GPIOB_IRQHandler          [WEAK]  ; GPIOB_IRQn          = 1,                                                     
+				EXPORT  GPIOC_IRQHandler          [WEAK]  ; GPIOC_IRQn          = 2,                                                     
+				EXPORT  GPIOD_IRQHandler          [WEAK]  ; GPIOD_IRQn          = 3,                                                     
+				;EXPORT  0                         [WEAK]  ; Reserved---------------4,                                                    
+				;EXPORT  0                         [WEAK]  ; Reserved---------------5,                                                    
+				EXPORT  UART0_IRQHandler          [WEAK]  ; UART0_IRQn          = 6,                                                     
+				EXPORT  UART1_IRQHandler          [WEAK]  ; UART1_IRQn          = 7,                                                     
+				EXPORT  LPUART_IRQHandler         [WEAK]  ;LPUART_IRQn          = 8,                                                    
+				;EXPORT  0                         [WEAK]  ; Reserved---------------9,                                                    
+				EXPORT  SPI0COMB_IRQHandler       [WEAK]  ; SPI0COMB_IRQn       = 10,                                                    
+				EXPORT  SPI_DUMMYCOMB_IRQHandler  [WEAK]  ; SPI_DUMMYCOMB_IRQn  = 11,                                                    
+				EXPORT  I2C0_IRQHandler           [WEAK]  ; I2C0_IRQn           = 12,                                                    
+				EXPORT  I2C_DUMMY_IRQHandler      [WEAK]  ; I2C_DUMMY_IRQn      = 13,                                                    
+				EXPORT  TIM10_IRQHandler          [WEAK]  ; TIMER0_IRQn         = 14,                                                    
+				EXPORT  TIM11_IRQHandler          [WEAK]  ; TIMER1_IRQn         = 15,                                                    
+				EXPORT  LPTIMER_IRQHandler        [WEAK]  ; LPTIMER_IRQn  = 16,                                                   
+				;EXPORT  0                         [WEAK]  ; Reserved---------------17,                                                   
+				EXPORT  TIM1_IRQHandler           [WEAK]  ; TIM1_IRQn           = 18,                                                    
+				EXPORT  TIM2_IRQHandler           [WEAK]  ; TIM2_IRQn           = 19,                                               
+				;EXPORT  0                         [WEAK]  ; Reserved---------------20,                                                   
+				EXPORT  PCA_IRQHandler            [WEAK]  ; PCA_IRQn            = 21,                                                    
+				EXPORT  WWDT_IRQHandler           [WEAK]  ; WWDT_IRQn           = 22,                                                    
+				EXPORT  IWDT_IRQHandler           [WEAK]  ; IWDT_IRQn           = 23,                                                    
+				EXPORT  ADC0_IRQHandler           [WEAK]  ; ADC0_IRQn           = 24,                                                    
+				EXPORT  LVD_IRQHandler            [WEAK]  ; LVD_IRQn            = 25,                                                
+				EXPORT  VC_IRQHandler             [WEAK]  ; VC_IRQn             = 26,                                                   
+				;EXPORT  0                         [WEAK]  ; Reserved---------------27,                                                   
+				EXPORT  AWK_IRQHandler            [WEAK]  ; AWK_IRQn    	    = 28,                      
+				EXPORT  ONEWIRE_IRQHandler        [WEAK]  ; ONEWIRE_IRQn    	= 29,                       
+				EXPORT  RTC_MATCH0_IRQHandler     [WEAK]  ;  RTC_MATCH0_IRQn    = 30,
+				EXPORT  CLKTRIM_IRQHandler        [WEAK]  ;  CLKTRIM_IRQn       = 31 
 
                 
-                
+ 
+GPIOA_IRQHandler          ; GPIOA_IRQn          = 0,                                                     
+GPIOB_IRQHandler          ; GPIOB_IRQn          = 1,                                                     
+GPIOC_IRQHandler          ; GPIOC_IRQn          = 2,                                                     
+GPIOD_IRQHandler          ; GPIOD_IRQn          = 3,                                                     
+;0                         ; Reserved---------------4,                                                    
+;0                         ; Reserved---------------5,                                                    
+UART0_IRQHandler          ; UART0_IRQn          = 6,                                                     
+UART1_IRQHandler          ; UART1_IRQn          = 7,                                                     
+LPUART_IRQHandler         ; LPUART_IRQn = 8,                                                    
+;0                         ; Reserved---------------9,                                                    
+SPI0COMB_IRQHandler       ; SPI0COMB_IRQn       = 10,                                                    
+SPI_DUMMYCOMB_IRQHandler  ; SPI_DUMMYCOMB_IRQn  = 11,                                                    
+I2C0_IRQHandler           ; I2C0_IRQn           = 12,                                                    
+I2C_DUMMY_IRQHandler      ; I2C_DUMMY_IRQn      = 13,                                                    
+TIM10_IRQHandler          ; TIMER0_IRQn         = 14,                                                    
+TIM11_IRQHandler          ; TIMER1_IRQn         = 15,                                                    
+LPTIMER_IRQHandler        ; LPTIMER_IRQn  = 16,,                                                   
+;0                         ; Reserved---------------17,                                                   
+TIM1_IRQHandler           ; TIM1_IRQn           = 18,                                                    
+TIM2_IRQHandler           ; TIM2_IRQn           = 19,                                                     
+;0                         ; Reserved---------------20,                                                   
+PCA_IRQHandler            ; PCA_IRQn            = 21,                                                    
+WWDT_IRQHandler           ; WWDT_IRQn           = 22,                                                    
+IWDT_IRQHandler           ; IWDT_IRQn           = 23,                                                    
+ADC0_IRQHandler           ; ADC0_IRQn           = 24,                                                    
+LVD_IRQHandler            ; LVD_IRQn            = 25,                                                   
+VC_IRQHandler             ; VC_IRQn             = 26,                                                     
+;0                         ; Reserved---------------27,                                                   
+AWK_IRQHandler            ; AWK_IRQn            = 28,                                                 
+ONEWIRE_IRQHandler        ; ONEWIRE_IRQn        = 29,                        
+RTC_MATCH0_IRQHandler     ; RTC_MATCH0_IRQn     = 30, C_MATCH0_IRQHandler     
+CLKTRIM_IRQHandler        ; CLKTRIM_IRQn        = 31  KTRIM_IRQHandler       
+      
+                B       .
+
+                ENDP
+
+
+                ALIGN
+
+
+; User Initial Stack & Heap
+
+                IF      :DEF:__MICROLIB
+
+                EXPORT  __initial_sp
+                EXPORT  __heap_base
+                EXPORT  __heap_limit
+
+                ELSE
+
+                IMPORT  __use_two_region_memory
+                EXPORT  __user_initial_stackheap
+
+__user_initial_stackheap PROC
+                LDR     R0, =  Heap_Mem
+                LDR     R1, =(Stack_Mem + Stack_Size)
+                LDR     R2, = (Heap_Mem +  Heap_Size)
+                LDR     R3, = Stack_Mem
+                BX      LR
+                ENDP
+
+                ALIGN
+
+                ENDIF
+
+
                 END

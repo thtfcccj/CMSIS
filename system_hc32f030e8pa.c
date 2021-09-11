@@ -53,7 +53,7 @@
 /* Include files                                                              */
 /******************************************************************************/
 #include "base_types.h"
-#include "hc32f030e8pa.h"
+#include "HC32f030.h"
 #include "system_hc32f030e8pa.h"
 
 //注：SYS_MHZ为全局定义
