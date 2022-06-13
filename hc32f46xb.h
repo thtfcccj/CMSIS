@@ -51,8 +51,8 @@
  **
  ******************************************************************************/
 
-#ifndef __HC32F46X_H__
-#define __HC32F46X_H__
+#ifndef __HC32F46XB_H__
+#define __HC32F46XB_H__
 
 #ifdef __cplusplus
 extern "C" {
