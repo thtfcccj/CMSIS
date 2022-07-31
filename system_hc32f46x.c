@@ -86,11 +86,15 @@ uint32_t SystemCoreClock = MRC_VALUE;
  ******************************************************************************/
 void SystemInit(void)
 {
-#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+  #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
     SCB->CPACR |= ((3UL << 20) | (3UL << 22)); /* set CP10 and CP11 Full Access */
-#endif
+  #endif
 
-    SystemCoreClockUpdate();
+  #ifdef APP_VECTOR_TABLE_BASE  //定义有应用程序的新向量表时(同时定义值)
+    SCB->VTOR = APP_VECTOR_TABLE_BASE; //注意.icf中的“_intvec_start”要与此相同
+  #endif
+    
+  SystemCoreClockUpdate();
 }
 
 void SystemCoreClockUpdate(void)  // Update SystemCoreClock variable

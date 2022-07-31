@@ -234,23 +234,23 @@ __vector_table
                 SECTION .text:CODE:NOROOT:REORDER(4)
 Reset_Handler
 ;SetSRAM3Wait
-                LDR     R0, =0x40050804
+                LDR     R0, =0x40050804;设置SRAM等待保护寄存器
                 MOV     R1, #0x77
                 STR     R1, [R0]
 
-                LDR     R0, =0x4005080C
+                LDR     R0, =0x4005080C;设置SRAM校验保护寄存器
                 MOV     R1, #0x77
                 STR     R1, [R0]
 
-                LDR     R0, =0x40050800
+                LDR     R0, =0x40050800;设置SRAM等待控制寄存器
                 MOV     R1, #0x1100
                 STR     R1, [R0]
 
-                LDR     R0, =0x40050804
+                LDR     R0, =0x40050804;设置SRAM等待保护寄存器
                 MOV     R1, #0x76
                 STR     R1, [R0]
 
-                LDR     R0, =0x4005080C
+                LDR     R0, =0x4005080C;//SRAM校验保护寄存器
                 MOV     R1, #0x76
                 STR     R1, [R0]
 
