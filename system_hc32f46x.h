@@ -123,7 +123,12 @@ extern "C" {
 extern uint32_t HRC_VALUE;                // HRC Clock Frequency (Core Clock)
 extern uint32_t SystemCoreClock;          // System Clock Frequency (Core Clock)
 extern void SystemInit(void);             // Initialize the system
-extern void SystemCoreClockUpdate(void);  // Update SystemCoreClock variable
+
+#ifndef DIS_SYS_DYNC_CLOCK //没有禁动态时钟指示时
+  extern void SystemCoreClockUpdate(void);  // Update SystemCoreClock variable
+#else
+  #define SystemCoreClockUpdate() do{}while(0)
+#endif
 
 //@} // Hc32f46xSystemGroup
 

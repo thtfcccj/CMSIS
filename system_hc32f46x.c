@@ -74,7 +74,12 @@
  ** System Clock Frequency (Core Clock) Variable according CMSIS
  ******************************************************************************/
 uint32_t HRC_VALUE = HRC_16MHz_VALUE;
-uint32_t SystemCoreClock = MRC_VALUE;
+
+#ifndef DIS_SYS_DYNC_CLOCK //没有禁动态时钟指示时
+  uint32_t SystemCoreClock = MRC_VALUE;
+#else //使用直接定义
+  uint32_t SystemCoreClock = SYS_MHZ * 1000000;
+#endif
 
 /**
  ******************************************************************************
@@ -97,6 +102,7 @@ void SystemInit(void)
   SystemCoreClockUpdate();
 }
 
+#ifndef DIS_SYS_DYNC_CLOCK //没有禁动态时钟指示时
 void SystemCoreClockUpdate(void)  // Update SystemCoreClock variable
 {
     uint8_t tmp = 0u;
@@ -155,6 +161,7 @@ void SystemCoreClockUpdate(void)  // Update SystemCoreClock variable
             break;
     }
 }
+#endif //#ifndef DIS_SYS_DYNC_CLOCK
 
 //@} // UsartGroup
 
